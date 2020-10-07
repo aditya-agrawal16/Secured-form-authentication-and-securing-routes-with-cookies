@@ -15,8 +15,18 @@
       integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
       crossorigin="anonymous"
     />
-
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+      integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+      crossorigin="anonymous"
+    ></script>
     <title>Secured login system!</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+      if(window.localStorage.getItem('token') === '') {
+        window.location.href = "/"
+      }
+    </script>
   </head>
   <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -65,12 +75,29 @@
     </nav>
 
     <div class="container mt-4" align="center">
-      <h3>Welcome to the website <%= user.name %></h3>
+      <h3 id="changing">Welcome to the website </h3>
       <hr />
       <img
         src="https://c1.wallpaperflare.com/preview/137/394/400/smiley-cool-funny-yellow.jpg"
       />
     </div>
+    <script>
+      $(document).ready(() => {
+        axios.get('/getuser',{
+          headers: {
+            authorization: window.localStorage.getItem('token')
+          }
+        }).then(res => {
+          if(res.data === "error") {
+            alert('Error');
+            window.location.href = "/";
+            window.localStorage.removeItem('token');
+          } else {
+            $("#changing").append(res.data)
+          }
+        })
+      })
+    </script>
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->

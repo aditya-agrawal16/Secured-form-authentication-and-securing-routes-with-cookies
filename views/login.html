@@ -31,6 +31,11 @@
       crossorigin="anonymous"
     ></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <!-- <script src="rsa.js"></script> -->
+    <script src="/js/encoding.js"></script>
+    <script src="/js/encoding-indexes.js"></script>
+    <script src="/js/converter-wrapper.js"></script>
+    <script src="/js/rsa-wrapper.js"></script>
     <title>PHP login system!</title>
   </head>
   <body>
@@ -97,13 +102,31 @@
       </form>
       <script>
         $(document).ready(() => {
-          $("form").submit((e) => {
+          $("form").submit(async (e) => {
             e.preventDefault();
             const { username, password } = e.target.elements;
+            const payload = await rsaWrapper
+              .publicEncrypt(
+                `-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA5eqFVZVZWPtcrES9nBx1
+wSTCbPiOvPBVYXkYkMqXF7NTlSMjG5CsXcBR0t0Z8A04vwjNYlOPEuxObnS+jYlw
+Rp7R2RwcWmIC3QRRFryi65IaBQTbCXa7bZyprGt4k7IyO6rjFr9QSys10PcuwENX
+464vlvXUSC2yrt/ciL+f7IEgS3f/eJ9G9rwmFI53xeb5xeND/D0C1a9eyxtTzdz3
+WKSXyTi1SN//Wpc7pZ/srKWCmR27vuiBulQ03AHDN/NlMauli523Bsd9Y35rdBbU
+9iIPHNxV8fPI9Dggq2Os9TBVnOrWwvkq/FtAUE1yllC73mfor6c+rAp97wItlynr
+lQIDAQAB
+-----END PUBLIC KEY-----`,
+                JSON.stringify({
+                  username: username.value,
+                  password: password.value,
+                })
+              )
+              .then(function (encrypted) {
+                return encrypted;
+              });
             axios
               .post("/login", {
-                username: username.value,
-                password: password.value,
+                payload: payload,
               })
               .then((res) => {
                 if (res.data !== "error") {

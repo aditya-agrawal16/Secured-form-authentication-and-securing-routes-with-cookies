@@ -8,7 +8,9 @@ const mongoURL =
   "mongodb+srv://project:Project123@cluster0.ar8rl.mongodb.net/<dbname>?retryWrites=true&w=majority";
 const User = require("./models/user.model");
 const verifyJWT = require("./verifyJWT");
+const decrypt = require("./rsaDecrypt");
 
+app.use(express.static("views"));
 app.set("views", path.join(__dirname, "views"));
 app.engine("html", require("ejs").renderFile);
 app.set("view engine", "html");
@@ -29,8 +31,9 @@ app.get("/", (req, res) => {
   res.render("login");
 });
 
-app.post("/login", (req, res) => {
+app.post("/login", decrypt.decrypt, (req, res) => {
   const { username, password } = req.body;
+  console.log(req.body);
   User.find({ username: username })
     .then((doc) => {
       if (doc.length > 0) {
